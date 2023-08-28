@@ -2,17 +2,19 @@
 // sestoft@itu.dk * 2014-08-21
 // raup@itu.dk * 2021-08-27
 package exercises01;
+import java.util.concurrent.*;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class TestLongCounterExperiments {
 
     LongCounter lc = new LongCounter();
     int counts = 10_000_000;
-
+	private final ReentrantLock lock = new ReentrantLock();
     public TestLongCounterExperiments() {
 
 	Thread t1 = new Thread(() -> {
 		for (int i=0; i<counts; i++) 
-		    lc.increment();
+			lc.increment();
 	});
 	Thread t2 = new Thread(() -> {
 		for (int i=0; i<counts; i++) 
@@ -34,7 +36,9 @@ public class TestLongCounterExperiments {
 	private long count = 0;    
     
 	public void increment() {
-	    count = count + 1;
+		lock.lock();
+	    count = count +  1;
+		lock.unlock();
 	}
     
 	public long get() {
